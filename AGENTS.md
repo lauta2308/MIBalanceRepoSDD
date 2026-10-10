@@ -6,7 +6,7 @@ MiBalance es una app web para centralizar ingresos y gastos en una cuenta de bal
 
 ## Stack
 
-- React 18 + Vite 8, Node 20.19+
+- React 19 + Vite 8, Node 22.12+
 - Supabase (cliente JS directo, sin backend propio) + PostgreSQL
 - Autenticación: Google OAuth (vía Supabase Auth)
   - Temporal: mientras se construye la feature central se usa el inicio de sesión anónimo de Supabase. Aislar ese código para reemplazarlo por Google OAuth (RF-22, RF-23) sin tocar la lógica de movimientos.
@@ -68,13 +68,13 @@ npm test
 - Requiere `.env.local` (ver `.env.example`) y las migraciones de `supabase/migrations/` ejecutadas en orden.
 - Los tests de `pruebas/` corren contra Supabase y crean 3 usuarios anónimos por corrida, marcados con `es_prueba = true`. Borrarlos con `supabase/scripts/limpiar_usuarios_prueba.sql`. Supabase limita los inicios de sesión anónimos (~30 por hora por IP).
 
-## Qué NO hacer
+## Reglas no negociables
 
-- No crear múltiples cuentas por usuario ni transferencias entre cuentas (fuera de alcance del PRD).
-- No agregar soporte multi-idioma ni librerías de internacionalización: la interfaz es solo en español (fuera de alcance del PRD).
-- No permitir que un movimiento quede sin categoría: usar siempre las categorías por defecto "Pago Realizado" / "Pago Ingresado" si el usuario no eligió una (RF-35, RF-36).
-- No implementar autenticación con contraseña propia ni almacenar credenciales en la aplicación (fuera de alcance del PRD).
-- No usar float para montos: usar tipo decimal/numeric con al menos dos decimales (RNF-04).
-- No permitir acceso a cuentas, categorías o movimientos de otro usuario (RNF-03).
-- No dejar el saldo inconsistente ante operaciones parciales de alta/edición/borrado de movimientos (RNF-05).
-- No convertir la fecha de un movimiento a UTC: es un día calendario (`date` en SQL, `"AAAA-MM-DD"` en JS), el que el usuario elige. "Hoy" se calcula con la fecha local del dispositivo; no usar `toISOString()` para obtenerla ni `new Date("AAAA-MM-DD")` para leerla, porque ambos corren el día.
+Los principios del proyecto están en `.specify/memory/constitution.md` y prevalecen sobre este archivo. Leerla antes de planificar o implementar. Resumen:
+
+1. Alcance estricto del PRD: nada fuera de `PRD.md` / `INTERFAZ.md` (ni múltiples cuentas, ni transferencias, ni multi-idioma, ni contraseña propia).
+2. Pruebas obligatorias y cero regresiones: cada feature con sus pruebas y la suite completa pasando.
+3. Seguridad y privacidad: RLS en todo, ningún secreto en el repo, errores sin detalles técnicos.
+4. Integridad financiera: `numeric` (nunca float), operaciones atómicas, siempre con categoría, fechas sin UTC.
+5. Dependencias en su última versión estable.
+6. Al terminar y probar una feature, preguntar al usuario si desea hacer el commit.
