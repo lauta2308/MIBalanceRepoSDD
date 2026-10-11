@@ -19,6 +19,11 @@ export default [
     },
   },
   {
+    // Los fixtures de Playwright exigen desestructurar con {} aunque no usen nada.
+    files: ['pruebas/e2e/**/*.js', 'pruebas/rendimiento/**/*.js'],
+    rules: { 'no-empty-pattern': 'off' },
+  },
+  {
     // FR-035: nada de datos financieros en la consola.
     files: ['src/**/*.{js,jsx}'],
     rules: { 'no-console': 'error' },

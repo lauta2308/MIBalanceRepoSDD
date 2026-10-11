@@ -1,0 +1,41 @@
+import { clienteSupabase } from './clienteSupabase.js';
+
+export const TAMANIO_PAGINA = 50;
+
+async function ContarMovimientos() {
+  const { count, error } = await clienteSupabase
+    .from('bav_movimientos')
+    .select('id', { count: 'exact', head: true });
+  if (error) throw error;
+  return count;
+}
+
+// Página de la lista (1, 2, …) y total de movimientos de la cuenta.
+export async function ObtenerPaginaMovimientos(numeroPagina) {
+  const desde = (numeroPagina - 1) * TAMANIO_PAGINA;
+  const { data, count, error } = await clienteSupabase
+    .from('bav_movimientos')
+    .select('*', { count: 'exact' })
+    .order('fecha', { ascending: false })
+    .order('creado_en', { ascending: false })
+    .order('id', { ascending: false })
+    .range(desde, desde + TAMANIO_PAGINA - 1);
+  // Una página posterior a la última responde "rango no satisfacible": está vacía.
+  if (error?.code === 'PGRST103') {
+    return { movimientos: [], total: await ContarMovimientos() };
+  }
+  if (error) throw error;
+  return { movimientos: data, total: count };
+}
+
+// monto: texto de la API ("1500.50"), para no pasar nunca por float.
+export async function AgregarMovimiento({ tipo, monto, idCategoria, fecha }) {
+  const { data, error } = await clienteSupabase.rpc('basp_agregar_movimiento', {
+    p_tipo: tipo,
+    p_monto: monto,
+    p_id_categoria: idCategoria,
+    p_fecha: fecha,
+  });
+  if (error) throw error;
+  return data;
+}

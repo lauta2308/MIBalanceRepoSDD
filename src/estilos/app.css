@@ -1,0 +1,368 @@
+/* Colores con contraste AA sobre los dos fondos (UI-16): texto ≥ 4,5:1 e íconos ≥ 3:1.
+   Sobre #ffffff / #f4f5f7: texto 17,4 / 15,9; verde 6,3 / 5,8; rojo 6,5 / 6,0;
+   secundario 6,9 / 6,3; primario 8,3 / 7,6. */
+:root {
+  --color-texto: #1a1a1a;
+  --color-texto-secundario: #5a5a5a;
+  --color-fondo: #f4f5f7;
+  --color-superficie: #ffffff;
+  --color-borde: #8a8f98;
+  --color-primario: #1f4e8c;
+  --color-primario-texto: #ffffff;
+  --color-verde: #1b6e34;
+  --color-rojo: #b3261e;
+  --color-foco: #1f4e8c;
+  --radio: 8px;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background-color: var(--color-fondo);
+}
+
+/* Foco siempre visible (FR-036). */
+:focus-visible {
+  outline: 3px solid var(--color-foco);
+  outline-offset: 2px;
+}
+
+.contenedor {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+h1,
+h2 {
+  margin: 0;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+h1 {
+  font-size: 1.5rem;
+}
+
+h2 {
+  font-size: 1.125rem;
+}
+
+/* --- Botones --- */
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.boton {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 2px solid var(--color-primario);
+  border-radius: var(--radio);
+  background-color: var(--color-superficie);
+  color: var(--color-primario);
+  font-weight: 600;
+}
+
+.boton-primario {
+  background-color: var(--color-primario);
+  color: var(--color-primario-texto);
+}
+
+/* Deshabilitado: se nota por el borde punteado, sin bajar el contraste del texto. */
+.boton:disabled {
+  border-style: dashed;
+  background-color: var(--color-fondo);
+  color: var(--color-texto-secundario);
+  border-color: var(--color-texto-secundario);
+}
+
+.boton-volver {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radio);
+  background: transparent;
+  color: var(--color-texto);
+}
+
+.boton-volver:disabled {
+  color: var(--color-texto-secundario);
+}
+
+.botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.botones > .boton {
+  flex: 1 1 140px;
+}
+
+/* --- Montos --- */
+
+.monto {
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.monto-positivo {
+  color: var(--color-verde);
+}
+
+.monto-negativo {
+  color: var(--color-rojo);
+}
+
+/* --- Sección Cuenta --- */
+
+.encabezado-cuenta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.saldo {
+  margin: 0;
+  font-size: clamp(1.5rem, 7vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.texto-cargando,
+.texto-vacio {
+  margin: 24px 0;
+  color: var(--color-texto-secundario);
+}
+
+.lista-movimientos {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grupo-fecha {
+  margin-bottom: 16px;
+}
+
+.grupo-fecha h2 {
+  margin-bottom: 4px;
+  font-size: 0.9375rem;
+  color: var(--color-texto-secundario);
+}
+
+.grupo-fecha ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--radio);
+  background-color: var(--color-superficie);
+}
+
+.fila-movimiento {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: none;
+  border-bottom: 1px solid var(--color-fondo);
+  background: transparent;
+  color: var(--color-texto);
+  text-align: left;
+}
+
+.fila-movimiento .categoria {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.fila-movimiento .monto {
+  flex-shrink: 0;
+  max-width: 60%;
+  text-align: right;
+  font-weight: 600;
+}
+
+.paginacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.paginacion .indicador {
+  margin: 0;
+  flex: 1 1 100%;
+  text-align: center;
+  order: 3;
+}
+
+/* --- Formulario --- */
+
+.pantalla-formulario header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.campo label,
+.campo .etiqueta {
+  font-weight: 600;
+}
+
+.campo input,
+.campo select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background-color: var(--color-superficie);
+  color: var(--color-texto);
+  font: inherit;
+}
+
+.campo input:disabled,
+.campo select:disabled {
+  background-color: var(--color-fondo);
+}
+
+.fecha-elegida {
+  margin: 0;
+}
+
+.calendario {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 8px;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background-color: var(--color-superficie);
+  /* Colores de react-day-picker con el mismo contraste que el resto. */
+  --rdp-accent-color: var(--color-primario);
+  --rdp-accent-background-color: #e3ebf6;
+  --rdp-today-color: var(--color-primario);
+  --rdp-day-width: 40px;
+  --rdp-day-height: 40px;
+  --rdp-day_button-width: 38px;
+  --rdp-day_button-height: 38px;
+}
+
+.calendario .rdp-root {
+  margin: 0 auto;
+}
+
+/* Días futuros deshabilitados: tachados para no depender solo del color. */
+.calendario .rdp-disabled {
+  color: var(--color-texto-secundario);
+  text-decoration: line-through;
+  opacity: 1;
+}
+
+/* --- Diálogos --- */
+
+dialog {
+  width: min(400px, calc(100vw - 32px));
+  max-width: none;
+  padding: 0;
+  border: none;
+  border-radius: var(--radio);
+  background-color: var(--color-superficie);
+  color: var(--color-texto);
+}
+
+dialog::backdrop {
+  background-color: rgb(0 0 0 / 50%);
+}
+
+.contenido-dialogo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.contenido-dialogo p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.mensaje {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.icono {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+}
+
+.icono-exito {
+  color: var(--color-verde);
+}
+
+.icono-error {
+  color: var(--color-rojo);
+}
+
+.pantalla-error-sesion {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 400px;
+  margin: 48px auto 0;
+  padding: 20px;
+  border-radius: var(--radio);
+  background-color: var(--color-superficie);
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
