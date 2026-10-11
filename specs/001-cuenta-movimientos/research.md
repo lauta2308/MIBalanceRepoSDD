@@ -152,7 +152,8 @@ Versiones verificadas en npm el 2026-10-10 (principio V: última versión establ
 
 ## R13. Medición de rendimiento (SC-003)
 
-- **Decision**: `supabase/scripts/cargar_movimientos_rendimiento.sql` inserta 5.000 movimientos
-  para un usuario dado y ajusta su saldo (se corre en el SQL Editor). Una prueba de Playwright
+- **Decision**: la prueba crea su propio usuario y carga los 5.000 movimientos con
+  `basp_agregar_movimiento` en tandas de 50 llamadas en paralelo (`pruebas/rendimiento/cargarDatos.js`),
+  sin pasos manuales y con el mismo código que usa la aplicación. Una prueba de Playwright
   con CPU 4× (CDP `Emulation.setCPUThrottlingRate`) y red emulada mide 100 altas, 100 ediciones y
   100 eliminaciones y calcula el p95.

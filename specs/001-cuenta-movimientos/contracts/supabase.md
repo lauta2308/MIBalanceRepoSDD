@@ -69,7 +69,7 @@ mensaje técnico (FR-024, RNF-07).
 | `TIPO_INVALIDO` | tipo distinto de INGRESO/GASTO | "No se pudo …" |
 | `CATEGORIA_INVALIDA` | categoría inexistente, de otra cuenta o de otro tipo | "No se pudo …" |
 | `FECHA_INVALIDA` | fecha nula o posterior a mañana en UTC | "No se pudo …" |
-| `MOVIMIENTO_INEXISTENTE` | id inexistente o de otro usuario | "No se pudo …" y se recarga la lista |
+| `MOVIMIENTO_INEXISTENTE` | id inexistente o de otro usuario | "El movimiento ya no existe. La lista se actualizará."; al presionar "Aceptar" se recargan el saldo y la página actual |
 | `SIN_CUENTA` | usuario sin cuenta (no debería ocurrir) | "No se pudo …" |
 | `FALLA_SIMULADA` | `p_simular_falla = true` | "No se pudo …" |
 | cualquier otro / red | — | "No se pudo …" |

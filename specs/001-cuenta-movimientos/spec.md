@@ -32,7 +32,9 @@ la edición y la eliminación de movimientos.
 
 En los escenarios, "hoy" es el sábado 03/10/2026 y los montos se muestran en formato argentino
 (punto de miles, coma decimal). Las categorías propias que aparecen en los escenarios ("Mercado",
-"Sueldo", etc.) se cargan como datos de prueba, porque crearlas desde la interfaz es la feature 002.
+"Sueldo", etc.) se simulan en las pruebas, porque crearlas es la feature 002. Por eso, el cambio a
+una categoría propia (US3, escenarios 3 y 4) se verifica en esta feature con datos simulados, y
+contra el servidor en la feature 002.
 
 ### User Story 1 - Ver el saldo y registrar gastos e ingresos (Priority: P1)
 
@@ -244,7 +246,9 @@ modificar datos de B siendo A, y simular fallas a mitad de las operaciones de A.
 - Eliminar el único movimiento de la última página: la lista vuelve a la página 1 y el indicador
   se recalcula; si quedan 50 o menos, desaparece la paginación.
 - Un movimiento editado o eliminado desde otra pestaña o dispositivo: la operación sobre un
-  movimiento que ya no existe muestra un mensaje de error y la lista se recarga.
+  movimiento que ya no existe cierra el formulario o la confirmación y muestra "El movimiento ya no existe. La lista se actualizará."
+  con una cruz roja; al presionar "Aceptar" se recargan el saldo y la página actual (si queda
+  vacía, se aplica FR-014).
 - Operaciones simultáneas del mismo usuario desde dos pestañas o dispositivos: el saldo sigue
   igual a ingresos menos gastos.
 - La página actual queda vacía porque se eliminaron movimientos desde otro dispositivo: se
@@ -266,6 +270,9 @@ Las referencias entre paréntesis remiten a `PRD.md` e `INTERFAZ.md`, que son la
 para los textos exactos.
 
 ### Functional Requirements
+
+Los números de FR son identificadores fijos, no posiciones. Los FR-032 a FR-036 se agregaron durante
+la aclaración y la revisión, y están ubicados en la sección temática que les corresponde.
 
 **Cuenta y saldo**
 
@@ -365,6 +372,9 @@ para los textos exactos.
   a intentarlo.", "No se pudo actualizar el movimiento. Vuelva a intentarlo.", "No se pudo
   eliminar el movimiento. Vuelva a intentarlo.", "No se pudieron cargar los movimientos. Vuelva a
   intentarlo." o "No se pudieron cargar las categorías. Vuelva a intentarlo.", según corresponda.
+  Si la edición o la eliminación fallan porque el movimiento ya no existe (fue eliminado desde
+  otra pestaña o dispositivo), DEBE mostrarse en cambio "El movimiento ya no existe. La lista se actualizará.", y al
+  presionar "Aceptar" se recargan el saldo y la página actual.
   (RNF-07)
 - **FR-033**: Si al abrir la aplicación no se puede iniciar la sesión, DEBE mostrarse solo el
   mensaje "No se pudo iniciar sesión. Vuelva a intentarlo." con una cruz roja y el botón
@@ -420,7 +430,7 @@ para los textos exactos.
 
 ### Measurable Outcomes
 
-- **SC-001**: El saldo se ve inmediatamente luego de iniciar sesión, con 0 interacciones. (O-1)
+- **SC-001**: El saldo se ve en la pantalla inicial luego de iniciar sesión, con 0 interacciones. (O-1)
 - **SC-002**: Un gasto con la categoría y la fecha por defecto se registra en 3 interacciones
   desde la sección Cuenta. (O-1)
 - **SC-003**: Con una cuenta de 5.000 movimientos y las condiciones de medición del PRD, el 95% de
@@ -469,8 +479,8 @@ para los textos exactos.
   por hora por dirección IP (relevante para las pruebas).
 - **Datos de rendimiento**: los 5.000 movimientos para medir SC-003 se cargan con un script de
   datos de prueba, no desde la interfaz.
-- **Categorías propias**: en esta feature solo existen las dos por defecto, salvo las que se
-  cargan como datos de prueba. El ordenamiento del selector (FR-007) se implementa igual, para que
+- **Categorías propias**: en esta feature solo existen las dos categorías por defecto; las
+  propias se simulan en las pruebas. El ordenamiento del selector (FR-007) se implementa igual, para que
   la feature 002 no tenga que cambiarlo.
 - **Moneda**: la cuenta queda en USD; cambiarla es la feature 003. La presentación ya usa el
   código de la moneda de la cuenta, sin asumir USD.

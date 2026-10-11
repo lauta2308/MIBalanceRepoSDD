@@ -126,10 +126,12 @@ src/
 
 supabase/
 ├── migrations/
-│   └── 0001_cuenta_movimientos.sql   # Tablas, índices, RLS, permisos, trigger, vista, funciones BASP_*
+│   ├── 0001_esquema_cuenta_movimientos.sql  # Tablas, índices, RLS, permisos, trigger, vista, BASP_OBTENER_CUENTA
+│   ├── 0002_agregar_movimiento.sql          # BASP_AGREGAR_MOVIMIENTO (US1)
+│   ├── 0003_editar_movimiento.sql           # BASP_EDITAR_MOVIMIENTO (US3)
+│   └── 0004_eliminar_movimiento.sql         # BASP_ELIMINAR_MOVIMIENTO (US4)
 └── scripts/
-    ├── limpiar_usuarios_prueba.sql
-    └── cargar_movimientos_rendimiento.sql
+    └── limpiar_usuarios_prueba.sql
 
 pruebas/
 ├── unitarias/                 # *.test.js / *.test.jsx (jsdom)

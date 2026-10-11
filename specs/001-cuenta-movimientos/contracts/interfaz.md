@@ -59,6 +59,7 @@ la pantalla de error de FR-033.
 | `FormatearMontoConSigno` | (`"1500.00"`, `'GASTO'`) → `"-1.500,00"`; (`"1000.00"`, `'INGRESO'`) → `"+1.000,00"` |
 | `FiltrarEntradaMonto` | `"abc50"` → `"50"`; `"10,555"` → `"10,55"`; `"$1.500,50"` → `"1.500,50"`; `"007"` → `"7"`; `",5"` → `"0,5"` |
 | `ConvertirEntradaAMontoApi` | `"1.500,5"` → `"1500.50"`; `"1500,"` → `"1500.00"`; `""` → `null` |
+| `ConvertirMontoApiAEntrada` | `"1500.00"` → `"1.500,00"`; `"1500.50"` → `"1.500,50"`; `"0.10"` → `"0,10"` (sin signo, para el formulario de edición) |
 | `ValidarMonto` | `null`/`"0.00"` → "El monto debe ser mayor a 0."; `"1000000000000.00"` → "El monto máximo es 999.999.999.999,99." |
 
 ## Fechas (`utilidades/fechas.js`)

@@ -57,4 +57,4 @@ Después de correr las pruebas, borrar los usuarios de prueba con
 | Unitarias | `pruebas/unitarias/` | Formato y filtro de montos, fechas, orden de categorías, traducción de errores, componentes (formulario, lista, paginación) |
 | Integración | `pruebas/integracion/` | Contra Supabase real: cuenta por defecto (AC-09), altas/ediciones/eliminaciones y saldo, validaciones del servidor (AC-49), aislamiento A/B (AC-116..118), fallas simuladas (AC-123), secuencia de 50 operaciones (AC-125), precisión (AC-121, AC-122) |
 | Punta a punta | `pruebas/e2e/` | Escenarios de la spec en el navegador, mensajes, errores 500 simulados (AC-127), anchos 320/768/1280/1920 (SC-007), contraste con axe (SC-008), teclado (SC-009) |
-| Rendimiento | `pruebas/rendimiento/` | SC-003: p95 < 2 s con 5.000 movimientos, CPU 4× (requiere correr antes `supabase/scripts/cargar_movimientos_rendimiento.sql`) |
+| Rendimiento | `pruebas/rendimiento/` | SC-003: p95 < 2 s con 5.000 movimientos, CPU 4× (la prueba carga sus propios datos; tarda unos minutos) |
