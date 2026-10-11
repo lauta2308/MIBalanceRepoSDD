@@ -134,3 +134,70 @@ describe('FormularioMovimiento en modo alta', () => {
     expect(alGuardar).not.toHaveBeenCalled();
   });
 });
+
+describe('FormularioMovimiento en modo edición', () => {
+  const categoriasEdicion = [
+    { id: 'g0', nombre: 'Pago Realizado', tipo: 'GASTO', es_por_defecto: true },
+    { id: 'g1', nombre: 'Transporte', tipo: 'GASTO', es_por_defecto: false },
+    { id: 'g3', nombre: 'Mercado', tipo: 'GASTO', es_por_defecto: false },
+    { id: 'i0', nombre: 'Pago Ingresado', tipo: 'INGRESO', es_por_defecto: true },
+    { id: 'i1', nombre: 'Sueldo', tipo: 'INGRESO', es_por_defecto: false },
+  ];
+  const movimiento = { id: 'm1', tipo: 'GASTO', monto: '1500.00', id_categoria: 'g1', fecha: '2026-09-17' };
+
+  function RenderizarEdicion(alGuardar = vi.fn(async () => ({ ok: true }))) {
+    render(
+      <ProveedorMensajes>
+        <FormularioMovimiento
+          modo="edicion"
+          movimiento={movimiento}
+          categorias={categoriasEdicion}
+          alGuardar={alGuardar}
+          alCancelar={vi.fn()}
+        />
+      </ProveedorMensajes>,
+    );
+    return alGuardar;
+  }
+
+  it('muestra los valores guardados: monto sin signo, categoría, fecha y tipo (AC-60, AC-61, AC-UI-06)', () => {
+    RenderizarEdicion();
+    expect(screen.getByRole('heading', { name: 'Editar Movimiento' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Monto')).toHaveValue('1.500,00');
+    expect(screen.getByLabelText('Categoría')).toHaveDisplayValue('Transporte');
+    expect(screen.getByLabelText('Tipo')).toHaveDisplayValue('Gasto');
+    expect(screen.getByText('17/09/2026')).toBeInTheDocument();
+  });
+
+  it('no ofrece "Eliminar" (AC-70)', () => {
+    RenderizarEdicion();
+    expect(screen.queryByRole('button', { name: 'Eliminar' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Guardar' })).toBeInTheDocument();
+  });
+
+  it('cambiar de "Transporte" a "Mercado" envía la nueva categoría (AC-62)', async () => {
+    const usuario = userEvent.setup();
+    const alGuardar = RenderizarEdicion();
+    await usuario.selectOptions(screen.getByLabelText('Categoría'), 'Mercado');
+    await usuario.click(screen.getByRole('button', { name: 'Guardar' }));
+    expect(alGuardar.mock.calls[0][0]).toEqual({ tipo: 'GASTO', monto: '1500.00', idCategoria: 'g3', fecha: '2026-09-17' });
+  });
+
+  it('al cambiar a "Ingreso" pasa a "Pago Ingresado" y muestra solo categorías de ingreso (AC-64)', async () => {
+    const usuario = userEvent.setup();
+    RenderizarEdicion();
+    await usuario.selectOptions(screen.getByLabelText('Tipo'), 'Ingreso');
+    expect(screen.getByLabelText('Categoría')).toHaveDisplayValue('Pago Ingresado');
+    expect(OpcionesCategoria()).toEqual(['Pago Ingresado', 'Sueldo']);
+    expect(screen.getByLabelText('Monto')).toHaveValue('1.500,00');
+  });
+
+  it('cambiar a "Ingreso" y elegir "Sueldo" envía tipo y categoría (AC-65)', async () => {
+    const usuario = userEvent.setup();
+    const alGuardar = RenderizarEdicion();
+    await usuario.selectOptions(screen.getByLabelText('Tipo'), 'Ingreso');
+    await usuario.selectOptions(screen.getByLabelText('Categoría'), 'Sueldo');
+    await usuario.click(screen.getByRole('button', { name: 'Guardar' }));
+    expect(alGuardar.mock.calls[0][0]).toMatchObject({ tipo: 'INGRESO', idCategoria: 'i1', monto: '1500.00' });
+  });
+});

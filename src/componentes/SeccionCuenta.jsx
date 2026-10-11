@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { ObtenerCuenta } from '../servicios/cuenta.js';
-import { TraducirError } from '../servicios/errores.js';
-import { ObtenerPaginaMovimientos, TAMANIO_PAGINA } from '../servicios/movimientos.js';
+import { EsMovimientoInexistente, TraducirError } from '../servicios/errores.js';
+import { EliminarMovimiento, ObtenerPaginaMovimientos, TAMANIO_PAGINA } from '../servicios/movimientos.js';
+import Confirmacion from './Confirmacion.jsx';
 import EncabezadoCuenta from './EncabezadoCuenta.jsx';
 import ListaMovimientos from './ListaMovimientos.jsx';
+import MenuMovimiento from './MenuMovimiento.jsx';
 import { useMensajes } from './Mensaje.jsx';
 import Paginacion from './Paginacion.jsx';
 
@@ -35,6 +37,9 @@ export default function SeccionCuenta() {
   const { MostrarMensaje } = useMensajes();
   const [datos, EstablecerDatos] = useState(null);
   const [cargandoPagina, EstablecerCargandoPagina] = useState(false);
+  const [movimientoSeleccionado, EstablecerMovimientoSeleccionado] = useState(null);
+  const [confirmandoEliminacion, EstablecerConfirmandoEliminacion] = useState(false);
+  const [eliminando, EstablecerEliminando] = useState(false);
   const omitirCarga = useRef(null);
 
   const paginaPedida = LeerPagina(parametros);
@@ -99,6 +104,54 @@ export default function SeccionCuenta() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ubicacion.key]);
 
+  function CerrarMenu() {
+    EstablecerMovimientoSeleccionado(null);
+  }
+
+  function IrAEditar() {
+    const idMovimiento = movimientoSeleccionado.id;
+    EstablecerMovimientoSeleccionado(null);
+    navegar(`/movimientos/${idMovimiento}/editar?pagina=${datos.pagina}`);
+  }
+
+  function PedirConfirmacion() {
+    EstablecerConfirmandoEliminacion(true);
+  }
+
+  function CancelarEliminacion() {
+    EstablecerConfirmandoEliminacion(false);
+    EstablecerMovimientoSeleccionado(null);
+  }
+
+  async function ConfirmarEliminacion() {
+    if (eliminando) return;
+    EstablecerEliminando(true);
+    try {
+      await EliminarMovimiento(movimientoSeleccionado.id);
+    } catch (error) {
+      EstablecerEliminando(false);
+      if (EsMovimientoInexistente(error)) {
+        // Se eliminó desde otra pestaña o dispositivo: se cierra la confirmación y, al presionar
+        // "Aceptar", se recargan el saldo y la página actual (FR-024).
+        EstablecerConfirmandoEliminacion(false);
+        EstablecerMovimientoSeleccionado(null);
+        await MostrarMensaje({ tipo: 'error', texto: TraducirError(error, 'ELIMINAR') });
+        await Recargar();
+        return;
+      }
+      // Cualquier otra falla: nada cambia y se queda en la página actual (FR-015, FR-020).
+      await MostrarMensaje({ tipo: 'error', texto: TraducirError(error, 'ELIMINAR') });
+      return;
+    }
+    // Tras eliminar: lista y saldo de la página 1 y después el mensaje (FR-015, FR-022).
+    const cargado = await Cargar(1);
+    EstablecerEliminando(false);
+    EstablecerConfirmandoEliminacion(false);
+    EstablecerMovimientoSeleccionado(null);
+    Mostrar(cargado);
+    await MostrarMensaje({ tipo: 'exito', texto: 'Movimiento eliminado con éxito.' });
+  }
+
   function CambiarPagina(pagina) {
     EstablecerParametros(pagina === 1 ? {} : { pagina: String(pagina) });
   }
@@ -128,7 +181,7 @@ export default function SeccionCuenta() {
       {datos && datos.total === 0 && <p className="texto-vacio">Aquí verá sus movimientos.</p>}
       {datos && datos.total > 0 && (
         <>
-          <ListaMovimientos movimientos={datos.movimientos} />
+          <ListaMovimientos movimientos={datos.movimientos} alSeleccionar={EstablecerMovimientoSeleccionado} />
           <Paginacion
             paginaActual={datos.pagina}
             totalMovimientos={datos.total}
@@ -137,6 +190,19 @@ export default function SeccionCuenta() {
           />
         </>
       )}
+      <MenuMovimiento
+        abierto={movimientoSeleccionado !== null && !confirmandoEliminacion}
+        alEditar={IrAEditar}
+        alEliminar={PedirConfirmacion}
+        alCerrar={CerrarMenu}
+      />
+      <Confirmacion
+        abierto={confirmandoEliminacion}
+        texto="¿Está seguro que desea eliminar este movimiento?"
+        procesando={eliminando}
+        alConfirmar={ConfirmarEliminacion}
+        alCancelar={CancelarEliminacion}
+      />
     </main>
   );
 }

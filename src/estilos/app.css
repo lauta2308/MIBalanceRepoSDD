@@ -196,6 +196,18 @@ button:disabled {
   text-align: left;
 }
 
+.fila-movimiento:hover {
+  background-color: var(--color-fondo);
+}
+
+.botones-menu {
+  flex-direction: column;
+}
+
+.botones-menu > .boton {
+  flex: none;
+}
+
 .fila-movimiento .categoria {
   min-width: 0;
   overflow-wrap: anywhere;

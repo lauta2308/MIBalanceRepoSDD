@@ -15,7 +15,7 @@ function AgruparPorFecha(movimientos) {
   return grupos;
 }
 
-export default function ListaMovimientos({ movimientos }) {
+export default function ListaMovimientos({ movimientos, alSeleccionar }) {
   return (
     <div className="lista-movimientos">
       {AgruparPorFecha(movimientos).map((grupo) => {
@@ -25,7 +25,7 @@ export default function ListaMovimientos({ movimientos }) {
             <h2 id={idEncabezado}>{FormatearFecha(grupo.fecha)}</h2>
             <ul>
               {grupo.movimientos.map((movimiento) => (
-                <FilaMovimiento key={movimiento.id} movimiento={movimiento} />
+                <FilaMovimiento key={movimiento.id} movimiento={movimiento} alSeleccionar={alSeleccionar} />
               ))}
             </ul>
           </section>

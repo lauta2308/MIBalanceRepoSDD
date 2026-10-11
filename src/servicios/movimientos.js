@@ -39,3 +39,35 @@ export async function AgregarMovimiento({ tipo, monto, idCategoria, fecha }) {
   if (error) throw error;
   return data;
 }
+
+const FORMATO_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Un movimiento para el formulario de edición; null si no existe o es de otro usuario (RLS).
+export async function ObtenerMovimiento(idMovimiento) {
+  if (!FORMATO_UUID.test(idMovimiento)) return null;
+  const { data, error } = await clienteSupabase
+    .from('bav_movimientos')
+    .select('*')
+    .eq('id', idMovimiento)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function EditarMovimiento({ idMovimiento, tipo, monto, idCategoria, fecha }) {
+  const { error } = await clienteSupabase.rpc('basp_editar_movimiento', {
+    p_id_movimiento: idMovimiento,
+    p_tipo: tipo,
+    p_monto: monto,
+    p_id_categoria: idCategoria,
+    p_fecha: fecha,
+  });
+  if (error) throw error;
+}
+
+export async function EliminarMovimiento(idMovimiento) {
+  const { error } = await clienteSupabase.rpc('basp_eliminar_movimiento', {
+    p_id_movimiento: idMovimiento,
+  });
+  if (error) throw error;
+}
