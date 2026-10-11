@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { FiltrarCategoriasPorTipo, OrdenarCategorias } from '../utilidades/categorias.js';
 import { ObtenerFechaHoy } from '../utilidades/fechas.js';
 import { ConvertirEntradaAMontoApi, ConvertirMontoApiAEntrada, ValidarMonto } from '../utilidades/montos.js';
@@ -33,6 +34,7 @@ export default function FormularioMovimiento({ modo, tipoInicial, movimiento, ca
   const [fecha, EstablecerFecha] = useState(esEdicion ? movimiento.fecha : ObtenerFechaHoy());
   const [guardando, EstablecerGuardando] = useState(false);
   const enviando = useRef(false);
+  const botonGuardar = useRef(null);
 
   let titulo = 'Editar Movimiento';
   if (!esEdicion) titulo = tipo === 'GASTO' ? 'Añadir Gasto' : 'Añadir Ingreso';
@@ -58,10 +60,15 @@ export default function FormularioMovimiento({ modo, tipoInicial, movimiento, ca
     EstablecerGuardando(true);
     const resultado = await alGuardar({ tipo, monto: montoApi, idCategoria, fecha });
     enviando.current = false;
-    EstablecerGuardando(false);
     if (resultado && !resultado.ok && resultado.texto) {
+      // El formulario se habilita y el foco vuelve a "Guardar" antes del mensaje, para que al
+      // cerrarlo el foco siga visible (FR-036).
+      flushSync(() => EstablecerGuardando(false));
+      botonGuardar.current?.focus();
       MostrarMensaje({ tipo: 'error', texto: resultado.texto });
+      return;
     }
+    EstablecerGuardando(false);
   }
 
   return (
@@ -81,7 +88,7 @@ export default function FormularioMovimiento({ modo, tipoInicial, movimiento, ca
         />
         <SelectorFecha valor={fecha} alCambiar={EstablecerFecha} deshabilitado={guardando} />
         <div className="botones">
-          <button type="submit" className="boton boton-primario" disabled={guardando}>
+          <button ref={botonGuardar} type="submit" className="boton boton-primario" disabled={guardando}>
             {guardando ? 'Guardando…' : 'Guardar'}
           </button>
           <button type="button" className="boton" onClick={alCancelar} disabled={guardando}>

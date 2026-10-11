@@ -15,6 +15,9 @@ export default defineConfig({
           environment: 'jsdom',
           include: ['pruebas/unitarias/**/*.test.{js,jsx}'],
           setupFiles: ['pruebas/unitarias/configuracion.js'],
+          // Pocos procesos a la vez: con el proyecto en /mnt/c (WSL) arrancar muchos juntos supera
+          // el tiempo de espera fijo de Vitest para iniciar un proceso.
+          maxWorkers: 4,
         },
       },
       {

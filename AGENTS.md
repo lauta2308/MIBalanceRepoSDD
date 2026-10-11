@@ -10,6 +10,7 @@ MiBalance es una app web para centralizar ingresos y gastos en una cuenta de bal
 - Supabase (cliente JS directo, sin backend propio) + PostgreSQL
 - Autenticación: Google OAuth (vía Supabase Auth)
   - Temporal: mientras se construye la feature central se usa el inicio de sesión anónimo de Supabase. Aislar ese código para reemplazarlo por Google OAuth (RF-22, RF-23) sin tocar la lógica de movimientos.
+- Librerías: react-router; react-day-picker + date-fns (calendario); Vitest + Testing Library + jsdom (pruebas unitarias y de integración); Playwright + axe-core (punta a punta, contraste y rendimiento); ESLint. Las versiones están en `package.json`, siempre la última estable al incorporarlas.
 
 ## Convenciones de nombres
 
@@ -61,12 +62,16 @@ Prefijo `BA` (Balance App) + tipo de objeto + nombre en español, en mayúsculas
 
 ```bash
 npm install
+npx playwright install chromium   # una sola vez
 npm run dev
-npm test
+npm test                  # unitarias + integración + punta a punta
+npm run test:e2e          # solo punta a punta
+npm run test:rendimiento  # rendimiento (SC-003), aparte: tarda unos 10 minutos
 ```
 
-- Requiere `.env.local` (ver `.env.example`) y las migraciones de `supabase/migrations/` ejecutadas en orden.
-- Los tests de `pruebas/` corren contra Supabase y crean 3 usuarios anónimos por corrida, marcados con `es_prueba = true`. Borrarlos con `supabase/scripts/limpiar_usuarios_prueba.sql`. Supabase limita los inicios de sesión anónimos (~30 por hora por IP).
+- Requiere `.env.local` (ver `.env.example`), las migraciones de `supabase/migrations/` ejecutadas en orden y, en Supabase, Authentication → Sign In / Providers → "Allow anonymous sign-ins" activado.
+- En WSL, Chromium necesita una vez `sudo npx playwright install-deps chromium`.
+- Las pruebas de `pruebas/` corren contra Supabase y crean usuarios anónimos marcados con `es_prueba = true`: 3 en integración, 2 en punta a punta (1 por worker y 1 de la prueba de error de sesión) y 1 en rendimiento; `npm test` crea 5 por corrida. Borrarlos con `supabase/scripts/limpiar_usuarios_prueba.sql`. Supabase limita los inicios de sesión anónimos (~30 por hora por IP).
 
 ## Reglas no negociables
 

@@ -5,7 +5,7 @@ export default function MenuMovimiento({ abierto, alEditar, alEliminar, alCerrar
   return (
     <Dialogo abierto={abierto} alCerrar={alCerrar} etiqueta="Opciones del movimiento">
       <div className="botones botones-menu">
-        <button type="button" className="boton" onClick={alEditar} autoFocus>
+        <button type="button" className="boton" onClick={alEditar} data-enfoque-inicial>
           Editar
         </button>
         <button type="button" className="boton" onClick={alEliminar}>

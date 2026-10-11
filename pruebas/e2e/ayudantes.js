@@ -56,14 +56,7 @@ export const test = base.extend({
 
   // Página con la sesión del usuario de prueba ya guardada en el navegador.
   page: async ({ page, usuarioPrueba }, usar) => {
-    await page.addInitScript(
-      ({ claveSesion, sesion }) => {
-        if (!window.localStorage.getItem(claveSesion)) {
-          window.localStorage.setItem(claveSesion, JSON.stringify(sesion));
-        }
-      },
-      { claveSesion: claveAlmacenamiento, sesion: usuarioPrueba.sesion },
-    );
+    await InyectarSesion(page, usuarioPrueba.sesion);
     await usar(page);
     await EliminarMovimientos(usuarioPrueba);
   },
@@ -75,6 +68,18 @@ export const test = base.extend({
 });
 
 export { expect };
+
+// Guarda la sesión en el navegador antes de que cargue la aplicación.
+export async function InyectarSesion(page, sesion) {
+  await page.addInitScript(
+    ({ claveSesion, sesionGuardada }) => {
+      if (!window.localStorage.getItem(claveSesion)) {
+        window.localStorage.setItem(claveSesion, JSON.stringify(sesionGuardada));
+      }
+    },
+    { claveSesion: claveAlmacenamiento, sesionGuardada: sesion },
+  );
+}
 
 // movimientos: [{ tipo, monto: "1500.00", fecha?: "AAAA-MM-DD" }] en orden de alta.
 export async function CargarMovimientos(usuarioPrueba, movimientos) {

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { ObtenerCuenta } from '../servicios/cuenta.js';
 import { EsMovimientoInexistente, TraducirError } from '../servicios/errores.js';
@@ -129,7 +130,7 @@ export default function SeccionCuenta() {
     try {
       await EliminarMovimiento(movimientoSeleccionado.id);
     } catch (error) {
-      EstablecerEliminando(false);
+      flushSync(() => EstablecerEliminando(false));
       if (EsMovimientoInexistente(error)) {
         // Se eliminó desde otra pestaña o dispositivo: se cierra la confirmación y, al presionar
         // "Aceptar", se recargan el saldo y la página actual (FR-024).

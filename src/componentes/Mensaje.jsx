@@ -54,7 +54,7 @@ export function ProveedorMensajes({ children }) {
               <p>{mensaje.texto}</p>
             </div>
             <div className="botones">
-              <button type="button" className="boton boton-primario" onClick={ManejarAceptar} autoFocus>
+              <button type="button" className="boton boton-primario" onClick={ManejarAceptar} data-enfoque-inicial>
                 Aceptar
               </button>
             </div>

@@ -66,7 +66,8 @@ button {
   cursor: pointer;
 }
 
-button:disabled {
+button:disabled,
+button[aria-disabled='true'] {
   cursor: not-allowed;
 }
 
@@ -86,7 +87,8 @@ button:disabled {
 }
 
 /* Deshabilitado: se nota por el borde punteado, sin bajar el contraste del texto. */
-.boton:disabled {
+.boton:disabled,
+.boton[aria-disabled='true'] {
   border-style: dashed;
   background-color: var(--color-fondo);
   color: var(--color-texto-secundario);
@@ -290,7 +292,11 @@ button:disabled {
   border: 1px solid var(--color-borde);
   border-radius: var(--radio);
   background-color: var(--color-superficie);
-  /* Colores de react-day-picker con el mismo contraste que el resto. */
+}
+
+/* react-day-picker define sus variables en .rdp-root: se redefinen ahí. Colores con el mismo
+   contraste que el resto. */
+.calendario .rdp-root {
   --rdp-accent-color: var(--color-primario);
   --rdp-accent-background-color: #e3ebf6;
   --rdp-today-color: var(--color-primario);
@@ -301,7 +307,22 @@ button:disabled {
 }
 
 .calendario .rdp-root {
+  width: fit-content;
   margin: 0 auto;
+}
+
+/* En pantallas angostas el calendario entra sin desplazamiento (320px). */
+@media (max-width: 400px) {
+  .calendario {
+    padding: 4px;
+  }
+
+  .calendario .rdp-root {
+    --rdp-day-width: 36px;
+    --rdp-day-height: 36px;
+    --rdp-day_button-width: 34px;
+    --rdp-day_button-height: 34px;
+  }
 }
 
 /* Días futuros deshabilitados: tachados para no depender solo del color. */

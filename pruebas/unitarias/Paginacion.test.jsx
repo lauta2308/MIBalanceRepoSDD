@@ -38,9 +38,16 @@ describe('Paginacion', () => {
     expect(alCambiarPagina.mock.calls).toEqual([[3], [1]]);
   });
 
-  it('deshabilita los botones mientras carga', () => {
-    render(<Paginacion paginaActual={2} totalMovimientos={120} cargando alCambiarPagina={vi.fn()} />);
-    expect(screen.getByRole('button', { name: 'Anterior' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Siguiente' })).toBeDisabled();
+  it('deshabilita los botones mientras carga sin quitarles el foco', async () => {
+    const usuario = userEvent.setup();
+    const alCambiarPagina = vi.fn();
+    render(<Paginacion paginaActual={2} totalMovimientos={120} cargando alCambiarPagina={alCambiarPagina} />);
+    const anterior = screen.getByRole('button', { name: 'Anterior' });
+    const siguiente = screen.getByRole('button', { name: 'Siguiente' });
+    expect(anterior).toHaveAttribute('aria-disabled', 'true');
+    expect(siguiente).toHaveAttribute('aria-disabled', 'true');
+    await usuario.click(siguiente);
+    await usuario.click(anterior);
+    expect(alCambiarPagina).not.toHaveBeenCalled();
   });
 });

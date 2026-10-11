@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 
 // Diálogo modal sobre <dialog> con showModal(): el resto de la página queda inerte (FR-023),
 // el foco entra al abrir y vuelve al elemento anterior al cerrar (FR-036).
+// El botón con data-enfoque-inicial recibe el foco al abrir.
 // alCerrar: si se pasa, Esc y el clic fuera cierran el diálogo; si no, solo se cierra desde
 // sus botones.
 export default function Dialogo({ abierto, alCerrar, etiqueta, children }) {
@@ -13,6 +14,8 @@ export default function Dialogo({ abierto, alCerrar, etiqueta, children }) {
     if (abierto && !dialogo.open) {
       elementoAnterior.current = document.activeElement;
       dialogo.showModal();
+      // El foco inicial se pone después de abrir: antes, el diálogo cerrado no puede recibirlo.
+      dialogo.querySelector('[data-enfoque-inicial]')?.focus();
     } else if (!abierto && dialogo.open) {
       dialogo.close();
     }
