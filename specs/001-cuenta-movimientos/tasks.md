@@ -238,10 +238,11 @@ edición y eliminación. Cada función ya tiene sus pruebas de seguridad en su h
 - [X] T084 Escribir `pruebas/rendimiento/operaciones.spec.js`: con un usuario con 5.000 movimientos (creado con `CrearUsuarioConMovimientos(5000)` de T083, en un `beforeAll` con timeout amplio), CPU 4× (`Emulation.setCPUThrottlingRate`) y red emulada (10 Mbps, 100 ms), medir 100 altas, 100 ediciones y 100 eliminaciones desde la confirmación hasta ver lista y saldo actualizados, y verificar p95 < 2 s por tipo (SC-003, AC-115)
 - [X] T085 Corregir lo que fallen T080–T084 (estilos, foco, consultas)
 - [X] T086 Revisión de seguridad: `npm run lint` sin errores (incluye `no-console` en `src/`, FR-035); `npm audit` sin vulnerabilidades; buscar en el repo `service_role`, claves o `.env.local` versionado; confirmar que ningún mensaje de error muestra `error.message` (constitución III)
-- [ ] T087 Ejecutar `npm test` completo (unitarias, integración y e2e) y dejarlo en verde; luego borrar los usuarios de prueba con `supabase/scripts/limpiar_usuarios_prueba.sql` (usuario)
-- [ ] T088 Recorrer la validación manual de `specs/001-cuenta-movimientos/quickstart.md` (pasos 1 a 11, incluido el borrado de los usuarios anónimos de la validación) y registrar el resultado
+- [X] T087 Ejecutar `npm test` completo (unitarias, integración y e2e) y dejarlo en verde; luego borrar los usuarios de prueba con `supabase/scripts/limpiar_usuarios_prueba.sql` (usuario)
+- [X] T088 Recorrer la validación manual de `specs/001-cuenta-movimientos/quickstart.md` (pasos 1 a 11, incluido el borrado de los usuarios anónimos de la validación) y registrar el resultado
+  - Resultado (2026-10-11): pasos 1 a 11 correctos, sin diferencias con lo esperado; usuarios de prueba y de la validación borrados.
 - [X] T089 Actualizar `AGENTS.md`: en "Stack", las librerías incorporadas sin versiones (react-router; react-day-picker + date-fns; Vitest + Testing Library + jsdom; Playwright + axe-core; ESLint; "las versiones están en package.json, siempre la última estable al incorporarlas"); en "Cómo correr", `npx playwright install chromium`, `npm run test:e2e`, `npm run test:rendimiento` y activar el inicio de sesión anónimo en Supabase; y corregir en "Cómo correr" la cantidad de usuarios anónimos que crea cada suite (integración, e2e y rendimiento), contándolos en la implementación real. **Revisar el cambio con el usuario antes de commitear** (plan.md, Cierre de la Feature)
-- [ ] T090 Preguntar al usuario si desea commitear la feature y, si acepta, si desea mergear `001-cuenta-movimientos` a `main` y hacer push (constitución, Flujo de Desarrollo)
+- [X] T090 Preguntar al usuario si desea commitear la feature y, si acepta, si desea mergear `001-cuenta-movimientos` a `main` y hacer push (constitución, Flujo de Desarrollo)
 
 ---
 
