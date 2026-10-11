@@ -1,45 +1,97 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { ObtenerCuenta } from '../servicios/cuenta.js';
 import { TraducirError } from '../servicios/errores.js';
-import { ObtenerPaginaMovimientos } from '../servicios/movimientos.js';
+import { ObtenerPaginaMovimientos, TAMANIO_PAGINA } from '../servicios/movimientos.js';
 import EncabezadoCuenta from './EncabezadoCuenta.jsx';
 import ListaMovimientos from './ListaMovimientos.jsx';
 import { useMensajes } from './Mensaje.jsx';
+import Paginacion from './Paginacion.jsx';
 
-// Sección Cuenta: saldo, botones de alta y lista de movimientos.
+// "?pagina=N": sin valor o con un valor inválido es la página 1.
+function LeerPagina(parametros) {
+  const texto = parametros.get('pagina');
+  return texto !== null && /^[1-9]\d{0,5}$/.test(texto) ? parseInt(texto, 10) : 1;
+}
+
+// Carga la cuenta y la página pedida; si la página está vacía y hay movimientos, la última
+// página con movimientos (FR-014).
+async function CargarCuentaYPagina(paginaPedida) {
+  const [cuenta, primeraRespuesta] = await Promise.all([ObtenerCuenta(), ObtenerPaginaMovimientos(paginaPedida)]);
+  let pagina = paginaPedida;
+  let respuesta = primeraRespuesta;
+  if (respuesta.movimientos.length === 0 && respuesta.total > 0) {
+    pagina = Math.ceil(respuesta.total / TAMANIO_PAGINA);
+    respuesta = await ObtenerPaginaMovimientos(pagina);
+  }
+  return { cuenta, pagina, movimientos: respuesta.movimientos, total: respuesta.total };
+}
+
+// Sección Cuenta: saldo, botones de alta y lista paginada de movimientos.
 export default function SeccionCuenta() {
   const navegar = useNavigate();
   const ubicacion = useLocation();
+  const [parametros, EstablecerParametros] = useSearchParams();
   const { MostrarMensaje } = useMensajes();
   const [datos, EstablecerDatos] = useState(null);
-  const mensajeMostrado = useRef(null);
+  const [cargandoPagina, EstablecerCargandoPagina] = useState(false);
+  const omitirCarga = useRef(null);
 
-  // Carga la cuenta y la lista. Si falla, muestra el error sin saldo ni lista y "Aceptar"
-  // reintenta (FR-024).
-  const Cargar = useCallback(async () => {
-    for (;;) {
-      try {
-        const [cuenta, pagina] = await Promise.all([ObtenerCuenta(), ObtenerPaginaMovimientos(1)]);
-        EstablecerDatos({ cuenta, movimientos: pagina.movimientos, total: pagina.total });
-        return;
-      } catch (error) {
-        await MostrarMensaje({ tipo: 'error', texto: TraducirError(error, 'CARGAR_MOVIMIENTOS') });
+  const paginaPedida = LeerPagina(parametros);
+  const textoPaginaPedida = parametros.get('pagina');
+
+  // Si falla, muestra el error sin saldo ni lista y "Aceptar" reintenta (FR-024).
+  const Cargar = useCallback(
+    async (pagina) => {
+      for (;;) {
+        try {
+          return await CargarCuentaYPagina(pagina);
+        } catch (error) {
+          EstablecerDatos(null);
+          await MostrarMensaje({ tipo: 'error', texto: TraducirError(error, 'CARGAR_MOVIMIENTOS') });
+        }
       }
-    }
-  }, [MostrarMensaje]);
+    },
+    [MostrarMensaje],
+  );
+
+  // Muestra lo cargado. Si se muestra otra página que la pedida, o hay que quitar el mensaje
+  // que dejó el formulario, reemplaza la dirección sin agregar una entrada al historial.
+  const Mostrar = useCallback(
+    (cargado, quitarMensaje = false) => {
+      EstablecerDatos(cargado);
+      EstablecerCargandoPagina(false);
+      const textoEsperado = cargado.pagina === 1 ? null : String(cargado.pagina);
+      if (textoPaginaPedida !== textoEsperado || quitarMensaje) {
+        omitirCarga.current = true;
+        navegar(textoEsperado ? `/?pagina=${textoEsperado}` : '/', { replace: true, state: null });
+      }
+    },
+    [navegar, textoPaginaPedida],
+  );
+
+  const Recargar = useCallback(async () => {
+    Mostrar(await Cargar(paginaPedida));
+  }, [Cargar, Mostrar, paginaPedida]);
 
   useEffect(() => {
+    // El reemplazo de la dirección hecho por Mostrar no vuelve a cargar lo que ya se muestra.
+    if (omitirCarga.current) {
+      omitirCarga.current = false;
+      return undefined;
+    }
     let vigente = true;
     const mensaje = ubicacion.state?.mensaje;
-    // El estado cambia después de await, no de forma sincrónica dentro del efecto.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    Cargar().then(() => {
-      // Mensaje que dejó el formulario al guardar, una sola vez por navegación.
-      if (!vigente || !mensaje || mensajeMostrado.current === ubicacion.key) return;
-      mensajeMostrado.current = ubicacion.key;
-      navegar(`${ubicacion.pathname}${ubicacion.search}`, { replace: true, state: null });
-      MostrarMensaje(mensaje);
+    EstablecerCargandoPagina(true);
+    Cargar(paginaPedida).then((cargado) => {
+      if (!vigente) return;
+      Mostrar(cargado, Boolean(mensaje));
+      // Mensaje que dejó el formulario al volver, una sola vez (FR-022).
+      if (mensaje) {
+        MostrarMensaje(mensaje).then(() => {
+          if (mensaje.recargar) Recargar();
+        });
+      }
     });
     return () => {
       vigente = false;
@@ -47,19 +99,44 @@ export default function SeccionCuenta() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ubicacion.key]);
 
+  function CambiarPagina(pagina) {
+    EstablecerParametros(pagina === 1 ? {} : { pagina: String(pagina) });
+  }
+
+  const paginaMostrada = datos?.pagina ?? paginaPedida;
+  const sufijoPagina = `?pagina=${paginaMostrada}`;
+
   return (
     <main className="contenedor">
       {datos ? <EncabezadoCuenta cuenta={datos.cuenta} /> : <p className="texto-cargando">Cargando…</p>}
       <div className="botones">
-        <button type="button" className="boton boton-primario" onClick={() => navegar('/movimientos/nuevo/gasto')}>
+        <button
+          type="button"
+          className="boton boton-primario"
+          onClick={() => navegar(`/movimientos/nuevo/gasto${sufijoPagina}`)}
+        >
           Añadir Gasto
         </button>
-        <button type="button" className="boton boton-primario" onClick={() => navegar('/movimientos/nuevo/ingreso')}>
+        <button
+          type="button"
+          className="boton boton-primario"
+          onClick={() => navegar(`/movimientos/nuevo/ingreso${sufijoPagina}`)}
+        >
           Añadir Ingreso
         </button>
       </div>
       {datos && datos.total === 0 && <p className="texto-vacio">Aquí verá sus movimientos.</p>}
-      {datos && datos.total > 0 && <ListaMovimientos movimientos={datos.movimientos} />}
+      {datos && datos.total > 0 && (
+        <>
+          <ListaMovimientos movimientos={datos.movimientos} />
+          <Paginacion
+            paginaActual={datos.pagina}
+            totalMovimientos={datos.total}
+            cargando={cargandoPagina}
+            alCambiarPagina={CambiarPagina}
+          />
+        </>
+      )}
     </main>
   );
 }
