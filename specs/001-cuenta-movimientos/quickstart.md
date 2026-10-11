@@ -48,7 +48,9 @@ Después de correr las pruebas, borrar los usuarios de prueba con
 | 7 | Abrir el calendario | En español, semana desde el lunes, hoy seleccionado, días futuros deshabilitados |
 | 8 | Repetir 2–5 solo con el teclado (Tab, Enter, Esc) | Todo es posible y el foco siempre se ve |
 | 9 | DevTools en 320px de ancho | Sin desplazamiento horizontal |
-| 10 | DevTools → Network → Offline, recargar | "No se pudo iniciar sesión. Vuelva a intentarlo."; volver a Online y "Aceptar" → entra a la cuenta |
+| 10a | DevTools → Network request blocking → bloquear `*.supabase.co` → recargar | "No se pudieron cargar los movimientos. Vuelva a intentarlo." con cruz roja, sin saldo ni lista; desbloquear y "Aceptar" → se ven el saldo y la lista |
+| 10b | En una ventana privada nueva, con el mismo bloqueo, abrir la app | "No se pudo iniciar sesión. Vuelva a intentarlo."; desbloquear y "Aceptar" → entra a "Mi Cuenta (USD)" |
+| 11 | En Supabase → Authentication → Users, borrar los usuarios anónimos creados en esta validación (los 2 más recientes, sin `es_prueba`) | No quedan datos de la validación en la base (constitución II); el script de limpieza no los borra porque no están marcados |
 
 ## Qué cubren las pruebas automáticas
 

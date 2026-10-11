@@ -16,8 +16,9 @@ exactos, de la spec.
 
 La página de la lista viaja en la dirección para no perderse al abrir un formulario (FR-015,
 FR-021): la sección Cuenta abre los formularios con su `pagina` actual; "Cancelar", la flecha y
-`MOVIMIENTO_INEXISTENTE` vuelven a `/?pagina=N`; guardar con éxito vuelve a `/` (página 1). Ruta
-desconocida → `/`. Antes de cualquier ruta se resuelve la sesión: "Cargando…" o, si falla,
+`MOVIMIENTO_INEXISTENTE` vuelven a `/?pagina=N`; guardar con éxito vuelve a `/` (página 1). Si la página pedida está vacía o no es válida, se
+muestra la que corresponda (FR-014) y la dirección se corrige sin agregar una entrada al
+historial. Ruta desconocida → `/`. Antes de cualquier ruta se resuelve la sesión: "Cargando…" o, si falla,
 la pantalla de error de FR-033.
 
 ## Sección Cuenta
