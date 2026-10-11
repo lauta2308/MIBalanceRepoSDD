@@ -62,9 +62,12 @@ auth.users 1 ── 1 BAT_CUENTAS 1 ── * BAT_CATEGORIAS
 | `creado_en` | `timestamptz` | `NOT NULL DEFAULT clock_timestamp()`; nunca se modifica |
 
 - `BAFK_MOVIMIENTOS_CATEGORIA`: FK compuesta `(id_categoria, id_cuenta, tipo)` →
-  `BAT_CATEGORIAS(id, id_cuenta, tipo)` `ON UPDATE RESTRICT ON DELETE RESTRICT`. Garantiza que la
-  categoría es de la misma cuenta y del mismo tipo, y que una categoría con movimientos no puede
-  borrarse ni cambiar de tipo (útil para RF-81/RF-83 en 002).
+  `BAT_CATEGORIAS(id, id_cuenta, tipo)` `ON UPDATE NO ACTION ON DELETE NO ACTION`. Garantiza que
+  la categoría es de la misma cuenta y del mismo tipo, y que una categoría con movimientos no
+  puede borrarse ni cambiar de tipo (útil para RF-81/RF-83 en 002). Se usa `NO ACTION` y no
+  `RESTRICT` porque `RESTRICT` se controla en el momento y podía hacer fallar el borrado en
+  cascada de un usuario (cuenta → categorías y movimientos); `NO ACTION` se controla al final de
+  la sentencia, cuando los movimientos ya se borraron.
 - `BAIX_MOVIMIENTOS_CUENTA_FECHA`: `(id_cuenta, fecha DESC, creado_en DESC, id DESC)`, para la
   lista paginada.
 - `BAIX_MOVIMIENTOS_CATEGORIA`: `(id_categoria)`, para la FK.

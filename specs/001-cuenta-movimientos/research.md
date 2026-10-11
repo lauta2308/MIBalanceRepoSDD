@@ -24,6 +24,8 @@ Versiones verificadas en npm el 2026-10-10 (principio V: última versión establ
   | @playwright/test | 1.64.0 | Pruebas de punta a punta, anchos de pantalla, teclado, rendimiento |
   | @axe-core/playwright | 4.13.0 | Contraste (UI-16, SC-008) |
   | eslint | 10.12.0 | Análisis estático |
+  | @eslint/js, eslint-plugin-react-hooks, globals | 10.0.1, 7.1.1, 17.13.0 | Reglas recomendadas de JS y de React Hooks para ESLint (agregadas en la implementación) |
+  | @testing-library/dom | 10.4.2 | Dependencia que exige @testing-library/react (agregada en la implementación) |
 
 - **Rationale**: todas son compatibles entre sí (react-router 8 pide React ≥ 19.2.7; vitest 5 acepta
   Vite 8; Testing Library acepta React 19). Node local: v22.23.2 (cumple el mínimo 22.12).
