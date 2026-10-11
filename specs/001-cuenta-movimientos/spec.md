@@ -257,8 +257,9 @@ modificar datos de B siendo A, y simular fallas a mitad de las operaciones de A.
   montos nunca se cortan ni generan desplazamiento horizontal.
 - Falla al iniciar la sesión temporal (sin conexión o límite de sesiones anónimas superado): se
   muestra el mensaje de error con "Aceptar", que reintenta, y nunca una cuenta vacía (FR-033).
-- Falla al cargar la lista de movimientos: se muestra un mensaje de error, nunca una lista vacía
-  engañosa ni un saldo incorrecto.
+- Falla al cargar la cuenta o la lista de movimientos: se muestra "No se pudieron cargar los
+  movimientos. Vuelva a intentarlo." y "Aceptar" reintenta; nunca una lista vacía engañosa ni un
+  saldo incorrecto (FR-024).
 - Mensajes: cada mensaje de éxito o de error queda visible hasta que el usuario presiona
   "Aceptar" (no desaparece solo, ni a los 10 segundos). (AC-113)
 - Pantallas angostas: en 320px se pueden hacer todas las acciones de la sección Cuenta sin
@@ -348,7 +349,8 @@ la aclaración y la revisión, y están ubicados en la sección temática que le
   formulario queda abierto con los valores ingresados para reintentar y se muestra el mensaje de
   error. (RF-63, RF-68, RNF-05)
 - **FR-021**: Los formularios de alta y edición DEBEN mostrar "Guardar" y permitir cerrarse sin
-  guardar con "Cancelar" o con la flecha para volver atrás, descartando los cambios. (RF-03,
+  guardar con "Cancelar" o con la flecha para volver atrás, descartando los cambios y volviendo a
+  la página de la lista en la que estaba el usuario. (RF-03,
   RF-64, RF-90, RF-91; AC-98 parcial: los formularios de movimientos)
 - **FR-032**: Mientras se procesa un alta, una edición o una eliminación, el botón que la
   disparó DEBE quedar deshabilitado con el texto "Guardando…" (o "Eliminando…" en la
@@ -375,6 +377,13 @@ la aclaración y la revisión, y están ubicados en la sección temática que le
   Si la edición o la eliminación fallan porque el movimiento ya no existe (fue eliminado desde
   otra pestaña o dispositivo), DEBE mostrarse en cambio "El movimiento ya no existe. La lista se actualizará.", y al
   presionar "Aceptar" se recargan el saldo y la página actual.
+  Después de un error de carga, al presionar "Aceptar": si falló la carga de la cuenta o de la
+  lista, se reintenta la carga sin mostrar mientras tanto ni el saldo ni la lista (la falla de la
+  cuenta usa el mismo texto que la de los movimientos); si fallaron las categorías al abrir un
+  formulario, se vuelve a la sección Cuenta; si al abrir "Editar" el movimiento ya no existe, se
+  muestra "El movimiento ya no existe. La lista se actualizará." y se vuelve a la sección Cuenta
+  con la página actual recargada (cualquier otra falla al cargarlo usa el texto de los
+  movimientos y también vuelve a la sección Cuenta).
   (RNF-07)
 - **FR-033**: Si al abrir la aplicación no se puede iniciar la sesión, DEBE mostrarse solo el
   mensaje "No se pudo iniciar sesión. Vuelva a intentarlo." con una cruz roja y el botón
@@ -424,7 +433,7 @@ la aclaración y la revisión, y están ubicados en la sección temática que le
   por defecto. Cada cuenta tiene siempre las dos por defecto.
 - **Movimiento**: pertenece a una cuenta. Tiene tipo (ingreso o gasto), monto (decimal exacto,
   mayor a 0, hasta 999.999.999.999,99), categoría (del mismo tipo y de la misma cuenta), fecha
-  (día calendario, no posterior a hoy; sin fecha mínima) y momento del alta (para ordenar dentro del mismo día).
+  (día calendario; en la interfaz no posterior a hoy, y el servidor acepta hasta mañana en UTC; sin fecha mínima) y momento del alta (para ordenar dentro del mismo día).
 
 ## Success Criteria *(mandatory)*
 

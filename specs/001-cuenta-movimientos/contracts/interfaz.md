@@ -9,12 +9,15 @@ exactos, de la spec.
 
 | Ruta | Pantalla | Flecha para volver atrás |
 |---|---|---|
-| `/` | Sección Cuenta | No (RF-01) |
-| `/movimientos/nuevo/gasto` | Formulario "Añadir Gasto" | Sí → `/` sin guardar |
-| `/movimientos/nuevo/ingreso` | Formulario "Añadir Ingreso" | Sí → `/` sin guardar |
-| `/movimientos/:idMovimiento/editar` | Formulario "Editar Movimiento" | Sí → `/` sin guardar |
+| `/?pagina=N` | Sección Cuenta (sin `pagina`, o con un valor inválido, es la página 1) | No (RF-01) |
+| `/movimientos/nuevo/gasto?pagina=N` | Formulario "Añadir Gasto" | Sí → `/?pagina=N` sin guardar |
+| `/movimientos/nuevo/ingreso?pagina=N` | Formulario "Añadir Ingreso" | Sí → `/?pagina=N` sin guardar |
+| `/movimientos/:idMovimiento/editar?pagina=N` | Formulario "Editar Movimiento" | Sí → `/?pagina=N` sin guardar |
 
-Ruta desconocida → `/`. Antes de cualquier ruta se resuelve la sesión: "Cargando…" o, si falla,
+La página de la lista viaja en la dirección para no perderse al abrir un formulario (FR-015,
+FR-021): la sección Cuenta abre los formularios con su `pagina` actual; "Cancelar", la flecha y
+`MOVIMIENTO_INEXISTENTE` vuelven a `/?pagina=N`; guardar con éxito vuelve a `/` (página 1). Ruta
+desconocida → `/`. Antes de cualquier ruta se resuelve la sesión: "Cargando…" o, si falla,
 la pantalla de error de FR-033.
 
 ## Sección Cuenta

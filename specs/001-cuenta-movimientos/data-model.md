@@ -111,4 +111,4 @@ Vista con `security_invoker = true` (respeta el RLS de quien consulta) para la l
 | Hasta 2 decimales | función (`p_monto = round(p_monto, 2)`) | filtro al escribir | (no se puede escribir) |
 | Categoría del mismo tipo y cuenta | FK compuesta + función | selector filtrado | (no se puede elegir) |
 | Fecha ≤ mañana en UTC | función | calendario hasta hoy local | (no se puede elegir) |
-| Movimiento propio | función (`id_cuenta` del usuario) | — | "No se pudo …" |
+| Movimiento propio | función (`id_cuenta` del usuario) | — | "El movimiento ya no existe. La lista se actualizará." |

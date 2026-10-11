@@ -37,6 +37,11 @@ Lista paginada:
 Cada fila: `id`, `tipo`, `monto` (texto), `fecha` (`"AAAA-MM-DD"`), `creado_en`, `id_categoria`,
 `nombre_categoria`. `count` es el total de movimientos de la cuenta.
 
+### `from('bav_movimientos').select('*').eq('id', idMovimiento).maybeSingle()`
+
+Un movimiento, para el formulario de edición. Devuelve `null` si no existe o es de otro usuario
+(RLS); la interfaz lo trata como `MOVIMIENTO_INEXISTENTE`.
+
 ## Escrituras
 
 Todas son funciones `SECURITY DEFINER`, atómicas, que operan solo sobre la cuenta de

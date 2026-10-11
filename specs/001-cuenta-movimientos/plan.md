@@ -97,7 +97,7 @@ src/
 │   ├── sesion.js              # ÚNICO lugar con la sesión anónima (se reemplaza en 005)
 │   ├── cuenta.js              # ObtenerCuenta
 │   ├── categorias.js          # ObtenerCategorias
-│   ├── movimientos.js         # ObtenerPaginaMovimientos, AgregarMovimiento, EditarMovimiento, EliminarMovimiento
+│   ├── movimientos.js         # ObtenerPaginaMovimientos, ObtenerMovimiento, AgregarMovimiento, EditarMovimiento, EliminarMovimiento
 │   └── errores.js             # TraducirError: código de la API → texto de la spec
 ├── utilidades/
 │   ├── montos.js              # Formato, filtro y validación con cadenas y BigInt
